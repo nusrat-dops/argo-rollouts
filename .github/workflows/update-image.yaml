@@ -46,17 +46,21 @@ jobs:
       - name: Print image tag
         run: echo "✅ Image pushed as ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.color }}-${{ github.run_number }}"
 
-      - name: Update image tag in patch file
+      - name: Update image in patch file
         run: |
-          echo "Updating ${{ env.PATCH_FILE }} with new image..."
-          sed -i "s|image: .*|image: ${{ env.IMAGE }}|" ${{ env.PATCH_FILE }}
-          echo "Updated patch file content:"
-          cat ${{ env.PATCH_FILE }}
+          IMAGE="ghcr.io/nusrat-dops/argo-rollouts:${{ github.event.inputs.color }}-${{ github.run_number }}"
+          echo "Updating image to: $IMAGE"
+          cd argocd-argo-rollouts-repo/overlays/dev
+          yq e -i ".spec.template.spec.containers[0].image = \"$IMAGE\"" patch-image-canary.yaml
+          cat patch-image-canary.yaml
 
-      - name: Commit and Push Changes
+
+      - name: Commit and push changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ${{ env.PATCH_FILE }}
-          git commit -m "ci: update image to ${{ env.IMAGE }}"
-          git push origin main
+          cd argocd-argo-rollouts-repo
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add overlays/dev/patch-image-canary.yaml
+          git commit -m "Update image to $IMAGE"
+          git push
+
