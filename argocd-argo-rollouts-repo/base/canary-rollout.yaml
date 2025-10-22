@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: ghcr.io/nusrat-dops/app-repo:latest
+          image: ghcr.io/nusrat-dops/argo-rollouts:latest
           ports:
             - containerPort: 80
   strategy:
