@@ -7,10 +7,6 @@ on:
         description: "Deployment color (blue or green)"
         required: true
         default: "blue"
-      version:
-        description: "Version tag (e.g., v1.0.0)"
-        required: true
-        default: "v1.0.0"
 
 permissions:
   contents: write
@@ -27,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -40,19 +36,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Define Image Tag
-        id: vars
-        run: |
-          IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.color }}@${{ github.event.inputs.version }}
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          echo "Using image: $IMAGE"
-
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.color }}-${{ github.run_number }}
+          
+      - name: Print image tag
+        run: echo "✅ Image pushed as ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.color }}-${{ github.run_number }}"
 
       - name: Update image tag in patch file
         run: |
