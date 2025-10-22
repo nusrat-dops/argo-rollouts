@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: docker pull ghcr.io/nusrat-dops/argo-rollouts:blue-1
+          image: 
