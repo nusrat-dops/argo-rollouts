@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourname/app-config.git
+    repoURL: https://github.com/nusrat-dops/argo-rollouts.git
     targetRevision: main
     path: overlays/dev
     kustomize:
