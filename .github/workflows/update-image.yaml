@@ -1,14 +1,16 @@
-name: Build and Update Canary Image
+name: Build and Deploy Blue/Green Image
 
 on:
-  #push:
-    #branches:
-     # - main
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Optional image tag (default: git commit SHA)"
-        required: false
+      color:
+        description: "Deployment color (blue or green)"
+        required: true
+        default: "blue"
+      version:
+        description: "Version tag (e.g., v1.0.0)"
+        required: true
+        default: "v1.0.0"
 
 permissions:
   contents: write
@@ -17,11 +19,13 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }} # e.g., ghcr.io/username/argo-rollouts
+  IMAGE_NAME: nusrat-dops/argo-rollouts
+  PATCH_FILE: overlays/dev/patch-image-canary.yaml
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -36,34 +40,31 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Define image tag
+      - name: Define Image Tag
         id: vars
         run: |
-          if [ -n "${{ github.event.inputs.tag }}" ]; then
-            TAG=${{ github.event.inputs.tag }}
-          else
-            TAG=$(echo $GITHUB_SHA | cut -c1-7)
-          fi
-          echo "TAG=$TAG" >> $GITHUB_ENV
-          echo "IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$TAG" >> $GITHUB_ENV
+          IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.inputs.color }}@${{ github.event.inputs.version }}
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "Using image: $IMAGE"
 
-      - name: Build and push image
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
+          context: .
           push: true
           tags: ${{ env.IMAGE }}
 
-      - name: Update image tag in Kustomize patch
+      - name: Update image tag in patch file
         run: |
-          echo "Updating image tag in overlays/dev/patch-image-canary.yaml..."
-          sed -i "s|image: .*|image: ${{ env.IMAGE }}|" overlays/dev/patch-image-canary.yaml
-          echo "Updated patch file:"
-          cat overlays/dev/patch-image-canary.yaml
+          echo "Updating ${{ env.PATCH_FILE }} with new image..."
+          sed -i "s|image: .*|image: ${{ env.IMAGE }}|" ${{ env.PATCH_FILE }}
+          echo "Updated patch file content:"
+          cat ${{ env.PATCH_FILE }}
 
-      - name: Commit and push changes
+      - name: Commit and Push Changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add overlays/dev/patch-image-canary.yaml
-          git commit -m "ci: update image tag to ${{ env.IMAGE }}"
+          git add ${{ env.PATCH_FILE }}
+          git commit -m "ci: update image to ${{ env.IMAGE }}"
           git push origin main
