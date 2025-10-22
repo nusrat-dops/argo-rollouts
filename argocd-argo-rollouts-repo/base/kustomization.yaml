@@ -1,0 +1,10 @@
+resources:
+  - canary-rollout.yaml
+  - canary-service.yaml
+  - bluegreen-rollout.yaml
+  - bluegreen-service.yaml
+  - ingress.yaml
+  - analysis-prometheus.yaml
+
+commonLabels:
+  app: myapp

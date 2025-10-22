@@ -1,0 +1,10 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp-canary
+spec:
+  template:
+    spec:
+      containers:
+        - name: myapp
+          image: ghcr.io/nusrat-dops/app-repo:git-abc123

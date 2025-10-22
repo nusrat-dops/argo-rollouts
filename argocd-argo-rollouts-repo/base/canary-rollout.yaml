@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp-canary
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: myapp
+        track: canary
+    spec:
+      containers:
+        - name: myapp
+          image: ghcr.io/nusrat-dops/app-repo:latest
+          ports:
+            - containerPort: 80
+  strategy:
+    canary:
+      canaryService: myapp-canary-svc
+      stableService: myapp-stable-svc
+      trafficRouting:
+        ingress:
+          name: myapp-ingress
+      steps:
+        - setWeight: 20
+        - pause: { duration: 30s }
+        - analysis:
+            templates:
+              - name: http-success-rate
+            args:
+              - name: request_duration
+                value: "60s"
+        - setWeight: 50
+        - pause: { duration: 30s }
+        - setWeight: 100

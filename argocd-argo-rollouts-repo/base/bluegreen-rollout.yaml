@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp-bluegreen
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+      track: blue
+  template:
+    metadata:
+      labels:
+        app: myapp
+        track: blue
+    spec:
+      containers:
+        - name: myapp
+          image: ghcr.io/nusrat-dops/app-repo:latest
+          ports:
+            - containerPort: 80
+  strategy:
+    blueGreen:
+      activeService: myapp-active-svc
+      previewService: myapp-preview-svc
+      autoPromotionEnabled: false
+      steps:
+        - pause: { duration: 30s }
+        - analysis:
+            templates:
+              - name: http-success-rate
+            args:
+              - name: request_duration
+                value: "60s"

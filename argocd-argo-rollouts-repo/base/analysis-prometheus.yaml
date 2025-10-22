@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: http-success-rate
+  namespace: default
+spec:
+  metrics:
+    - name: success-rate
+      provider:
+        prometheus:
+          address: http://prometheus-operated.default.svc:9090
+          query: |
+            (sum(rate(http_requests_total{job="myapp",status=~"2.."}[{{args.request_duration}}]))
+             /
+             sum(rate(http_requests_total{job="myapp"}[{{args.request_duration}}])) ) * 100
+      failureCondition: "result < 95"
+      successCondition: "result >= 95"
+      interval: 15s
+      count: 3
+
+---
+# Optional: a ConfigMap to document expected labels, not required by argo-rollouts but helpful
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-metadata
+  namespace: default
+data:
+  note: "Canary and Blue-Green rollouts using prometheus analysis template. Ensure Prometheus job labels http_requests_total{job=\"myapp\"} exist."
