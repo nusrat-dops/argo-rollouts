@@ -16,7 +16,7 @@ permissions:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: nusrat-dops/argo-rollouts
-  PATCH_FILE: overlays/dev/patch-image-canary.yaml
+  PATCH_FILE: argocd-argo-rollouts-repo/overlays/dev/patch-image-canary.yaml
 
 jobs:
   build:
