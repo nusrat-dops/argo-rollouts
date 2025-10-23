@@ -12,7 +12,7 @@ spec:
       failureCondition: result[0] < 0.9
       provider:
         prometheus:
-          address: http://prometheus-operated.monitoring.svc.cluster.local
+          address: http://prometheus-operated.default.svc:9090
           query: |
             sum(rate(http_requests_total{status=~"2.."}[1m])) / sum(rate(http_requests_total[1m]))
 ---
