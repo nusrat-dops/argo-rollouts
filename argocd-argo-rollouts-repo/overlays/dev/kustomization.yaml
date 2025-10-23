@@ -6,7 +6,7 @@ patchesStrategicMerge:
   #- patch-image-bluegreen.yaml
   #- patch-service-canary.yaml
   - patch-ingress.yaml
-  - patch-analysis.yaml
+  #- patch-analysis.yaml
 
 commonLabels:
   env: dev
