@@ -8,5 +8,5 @@ patchesStrategicMerge:
   - patch-ingress.yaml
   #- patch-analysis.yaml
 
-commonLabels:
-  env: dev
+#commonLabels:
+  #env: dev
