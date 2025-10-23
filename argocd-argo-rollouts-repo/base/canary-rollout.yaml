@@ -79,9 +79,6 @@ spec:
         - analysis:
             templates:
               - templateName: http-success-rate
-            args:
-              - name: request_duration
-                value: "60s"
         - setWeight: 50
         - pause: { duration: 30s }
         - setWeight: 100
