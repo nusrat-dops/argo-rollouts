@@ -1,6 +1,6 @@
 resources:
   - canary-rollout.yaml
-  - canary-service.yaml
+  #- canary-service.yaml
   # - bluegreen-rollout.yaml
   # - bluegreen-service.yaml
   - ingress.yaml
