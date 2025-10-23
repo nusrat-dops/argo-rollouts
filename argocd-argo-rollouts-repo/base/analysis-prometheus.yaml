@@ -17,13 +17,3 @@ spec:
       successCondition: "result >= 95"
       interval: 15s
       count: 3
-
----
-# Optional: a ConfigMap to document expected labels, not required by argo-rollouts but helpful
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: myapp-metadata
-  namespace: default
-data:
-  note: "Canary and Blue-Green rollouts using prometheus analysis template. Ensure Prometheus job labels http_requests_total{job=\"myapp\"} exist."
