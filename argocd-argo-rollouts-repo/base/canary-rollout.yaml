@@ -6,7 +6,7 @@ metadata:
 spec:
   metrics:
     - name: success-rate
-      consecutiveSuccessLimit: 1
+      #consecutiveSuccessLimit: 1
       interval: 30s
       failureLimit: 0
       successCondition: "result[0] >= 0"
