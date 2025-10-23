@@ -9,7 +9,7 @@ spec:
       consecutiveSuccessLimit: 1
       interval: 1m
       failureLimit: 3
-      count: 3
+      count: 5
       successCondition: "result[0] >= 0.99"
       provider:
         prometheus:
