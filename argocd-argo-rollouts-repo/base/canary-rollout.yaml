@@ -58,7 +58,7 @@ spec:
         - pause: { duration: 30s }
         - analysis:
             templates:
-              - name: http-success-rate
+              - templateName:: http-success-rate
             args:
               - name: request_duration
                 value: "60s"
