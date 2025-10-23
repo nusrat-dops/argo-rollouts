@@ -4,7 +4,7 @@ resources:
 patchesStrategicMerge:
   - patch-image-canary.yaml
   #- patch-image-bluegreen.yaml
-  - patch-service-canary.yaml
+  #- patch-service-canary.yaml
   - patch-ingress.yaml
   - patch-analysis.yaml
 
